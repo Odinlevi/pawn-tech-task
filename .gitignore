@@ -50,4 +50,8 @@ scriptfiles/*
 # 7. Package Managers
 # ==========================================
 dependencies/
+
+# ==========================================
+# 8. Database Files
+# ==========================================
 server_realtime_data.db
