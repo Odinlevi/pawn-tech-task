@@ -1,0 +1,74 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Compile main.pwn",
+            "type": "shell",
+            "command": "${workspaceFolder}\\qawno\\pawncc.exe",
+            "args": [
+                "${workspaceFolder}\\gamemodes\\main.pwn",
+                "--%",
+                "-i${workspaceFolder}\\qawno\\include",
+                "-o${workspaceFolder}\\gamemodes\\main.amx",
+                "-;+",
+                "-(+",
+                "-d3",
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Compile main.pwn gamemode using Pawn compiler"
+        },
+        {
+            "label": "Compile All Gamemodes",
+            "type": "shell",
+            "command": "powershell.exe",
+            "args": [
+                "-Command",
+                "Get-ChildItem -Path '${workspaceFolder}\\gamemodes' -Filter '*.pwn' | ForEach-Object { Write-Host \"Compiling $($_.Name)...\"; & '${workspaceFolder}\\qawno\\pawncc.exe' $_.FullName \"-i${workspaceFolder}\\qawno\\include\" \"-o$($_.FullName -replace '\\.pwn$', '.amx')\" \"-d3\" \"-;+\" \"-(+\" \"-\\+\" }"
+            ],
+            "group": "build",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": false,
+                "panel": "shared"
+            },
+            "problemMatcher": [],
+            "detail": "Compile all PWN files in gamemodes directory"
+        },
+        {
+            "label": "Start Server",
+            "type": "shell",
+            "command": "${workspaceFolder}\\omp-server.exe",
+            "group": "test",
+            "presentation": {
+                "echo": true,
+                "reveal": "always",
+                "focus": true,
+                "panel": "dedicated"
+            },
+            "isBackground": true,
+            "problemMatcher": [],
+            "detail": "Start the open.mp server"
+        },
+        {
+            "label": "Compile and Start Server",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "Compile main.pwn",
+                "Start Server"
+            ],
+            "group": "build",
+            "detail": "Compile main.pwn and then start the server"
+        }
+    ]
+}

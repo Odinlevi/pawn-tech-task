@@ -1,0 +1,21 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Compile main.pwn",
+            "type": "extensionHost",
+            "request": "launch",
+            "runtimeExecutable": "cmd.exe",
+            "args": ["echo Compiling main.pwn..."],
+            "preLaunchTask": "Compile main.pwn"
+        },
+        {
+            "name": "Compile and Run Server",
+            "type": "extensionHost",
+            "request": "launch",
+            "runtimeExecutable": "${workspaceFolder}\\omp-server.exe",
+            "args": [""],
+            "preLaunchTask": "Compile and Start Server"
+        }
+    ]
+}

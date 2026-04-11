@@ -1,0 +1,52 @@
+# ==========================================
+# 1. Compiled Pawn Code
+# ==========================================
+*.amx
+
+# ==========================================
+# 2. Server Binaries & Executables
+# ==========================================
+samp-server.exe
+samp-npc.exe
+announce.exe
+openmp-server.exe
+samp03svr
+samp-npc
+announce
+qawno/pawncc.exe
+qawno/pawnc.dll
+qawno/pawncc
+
+# ==========================================
+# 3. Logs and Crash Reports
+# ==========================================
+server_log.txt
+*.log
+*.dmp
+crashinfo.txt
+
+# ==========================================
+# 4. Plugins
+# ==========================================
+plugins/*.dll
+plugins/*.so
+
+# ==========================================
+# 5. Scriptfiles (Dynamic Server Data)
+# ==========================================
+# The ! rule ensures the empty folder itself is still tracked by Git.
+scriptfiles/*
+!scriptfiles/.gitkeep
+
+# ==========================================
+# 6. VS Code / Editor Specifics
+# ==========================================
+.vscode/ipawn.json
+.vscode/c_cpp_properties.json
+.vscode/browse.vc.db
+*.code-workspace
+
+# ==========================================
+# 7. Package Managers
+# ==========================================
+dependencies/
