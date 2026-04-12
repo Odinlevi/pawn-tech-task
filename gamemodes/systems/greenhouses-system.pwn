@@ -8,7 +8,14 @@
 #define TOTAL_CHUNKS 50
 #define GREENHOUSES_PER_CHUNK (MAX_GREENHOUSES / TOTAL_CHUNKS)
 
+// todo: there is a different way to store this. needs to be optimized before finishing:
+// new g_GreenhouseDataPerPlayer[MAX_PLAYERS][MAX_GREENHOUSES_PER_PLAYER][E_GREENHOUSE_DATA];
 new g_GreenhouseData[MAX_GREENHOUSES][E_GREENHOUSE_DATA];
+
+// todo: another optimization is to keep track of which greenhouses are active and only iterate over those. 
+// need to expose functions to add/remove from that active list when creating greenhouses, and also when players connect/disconnect.
+// might be a good idea to move cached logic to the dedicated cached domain so repositories could interact with it without needing
+// to include greenhouses systems.
 
 new g_CurrentChunk = 0;
 

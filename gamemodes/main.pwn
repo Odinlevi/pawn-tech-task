@@ -11,7 +11,7 @@ public OnGameModeInit()
     print("Greenhouse Server Started");
 
     // Sets a "tick" every 20 milliseconds (50 times per second)
-    SetTimer("ServerTick", 20, true);
+    SetTimer("ServerTick", SERVER_TICK_INTERVAL, true);
     
     // Disable the default GTA SA single-player map objects
     DisableInteriorEnterExits();
