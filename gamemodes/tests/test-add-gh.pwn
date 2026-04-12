@@ -1,7 +1,7 @@
 #include "systems/greenhouses-system.pwn"
 #include "domain/greenhouse.pwn"
 
-public TestAddGreenhouse(playerid)
+stock TestAddGreenhouse(playerid)
 {
     // This is a simple test function to add a greenhouse for the player who called it.
 

@@ -1,9 +1,16 @@
 #include <open.mp>
 
+#include "persistence/server-db-context.pwn"
+
 #include "systems/server-tick-system.pwn"
 #include "systems/greenhouses-system.pwn"
 
-#include "tests/test-add-gh.pwn"
+#include "commands/on-player-connected-command.pwn"
+#include "commands/on-player-disconnected-command.pwn"
+
+// #include "tests/test-add-gh.pwn"
+// #include "persistence/repositories/user-repository.pwn"
+// #include "domain/dtos/repository-responses/user/find-or-create-user-rep-response.pwn"
 
 // This is the entry point for the server, executed once when the server starts.
 public OnGameModeInit()
@@ -13,6 +20,13 @@ public OnGameModeInit()
     // Sets a "tick" every 20 milliseconds (50 times per second)
     SetTimer("ServerTick", SERVER_TICK_INTERVAL, true);
     
+    // intialize main db
+    if (!ServerDBContext_InitializeDatabase("server_realtime_data.db"))
+    {
+        print("Failed to initialize database!");
+        return 0;
+    }
+
     // Disable the default GTA SA single-player map objects
     DisableInteriorEnterExits();
 
@@ -21,6 +35,14 @@ public OnGameModeInit()
     AddPlayerClass(0, 0.0, 0.0, 3.0, 0.0, 0, 0, 0, 0, 0, 0);
 
     InitializeGreenhouseData();
+
+
+    // // TEST AREA
+    // new dbResponse[E_USER_FIND_OR_CREATE_REP_RESPONSE];
+    // dbResponse = UserRepository_FindOrCreateUser("odi");
+
+    // printf("UserRepository_FindOrCreateUser response: ID=%d, Username=%s", dbResponse[u_ID], dbResponse[u_Username]);
+    // // END
     
     return 1;
 }
@@ -28,11 +50,7 @@ public OnGameModeInit()
 // Triggered when a player connects to the server
 public OnPlayerConnect(playerid)
 {
-    // Send a message to the chat
-    SendClientMessage(playerid, -1, "Welcome to the Greenhouse Test Server!");
-
-    TestAddGreenhouse(playerid);
-
+    OnPlayerConnectedCommand(playerid);
     return 1;
 }
 
@@ -62,6 +80,22 @@ public OnPlayerSpawn(playerid)
     return 1;
 }
 
+public OnPlayerDisconnect(playerid, reason)
+{
+    OnPlayerDisconnectedCommand(playerid);
+    return 1;
+}
+
+public OnGameModeExit()
+{
+    print("Greenhouse Server Stopped");
+    ServerDBContext_CloseDatabase();
+
+    // todo: persist any data in memory that hasn't been persisted yet, such as greenhouses growth progress.
+    // it's important since OnPlayerDisconnect won't be triggered if the server is stopped.
+
+    return 1;
+}
 
 forward ServerTick();
 public ServerTick()
