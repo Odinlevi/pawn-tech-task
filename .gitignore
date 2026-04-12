@@ -24,6 +24,7 @@ server_log.txt
 *.log
 *.dmp
 crashinfo.txt
+log.txt
 
 # ==========================================
 # 4. Plugins

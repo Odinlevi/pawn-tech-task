@@ -1,6 +1,15 @@
+#if defined _greenhouse_included
+    #endinput
+#endif
+#define _greenhouse_included
+
 // Max number of greenhouses allowed in the server
 #if !defined MAX_GREENHOUSES
     #define MAX_GREENHOUSES 5000
+#endif
+
+#if !defined MAX_GREENHOUSES_PER_PLAYER
+    #define MAX_GREENHOUSES_PER_PLAYER 5
 #endif
 
 #if !defined GREENHOUSE_MODEL
@@ -47,11 +56,26 @@
 
 
 enum E_GREENHOUSE_DATA {
-    gh_ID,              // Database primary key ID
-    Float:gh_Pos[3],    // X, Y, Z coordinates
-    gh_VirtualWorld,    // Virtual World ID
-    gh_PositionID,      // Position ID
-    gh_Progress,        // Growth Progress in seconds
-    bool:gh_IsUpgraded  // Upgrade Status
+    gh_ID,               // Database primary key ID
+    gh_OwnerID,          // Player ID of the owner
+    gh_PositionID,       // Position ID (is persistant)
+    Float:gh_Pos[3],     // X, Y, Z coordinates (is cached only)
+    gh_Progress,         // Growth Progress in seconds
+    bool:gh_IsUpgraded,  // Upgrade Status
+    bool:gh_IsPaused     // Growth Pause Status, when player is not nearby (is cached only)
 };
 
+forward InitializeEmptyGreenhouse(gh_data[E_GREENHOUSE_DATA]);
+
+public InitializeEmptyGreenhouse(gh_data[E_GREENHOUSE_DATA])
+{
+    gh_data[gh_ID] = -1; // -1 indicates an empty slot
+    gh_data[gh_OwnerID] = -1;
+    gh_data[gh_PositionID] = -1;
+    gh_data[gh_Pos][0] = 0.0;
+    gh_data[gh_Pos][1] = 0.0;
+    gh_data[gh_Pos][2] = 0.0;
+    gh_data[gh_Progress] = 0;
+    gh_data[gh_IsUpgraded] = false;
+    gh_data[gh_IsPaused] = false;
+}
