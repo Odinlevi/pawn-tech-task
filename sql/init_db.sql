@@ -9,10 +9,11 @@ CREATE TABLE IF NOT EXISTS players (
 
 -- Create Greenhouse table
 CREATE TABLE IF NOT EXISTS greenhouses (
-    id                INTEGER PRIMARY KEY,
-    player_id         INTEGER NOT NULL,
-    grow_time_seconds INTEGER NOT NULL DEFAULT 0,
-    is_boosted        INTEGER NOT NULL CHECK (is_boosted IN (0, 1)) DEFAULT 0,
+    id                    INTEGER PRIMARY KEY,
+    player_id             INTEGER NOT NULL,
+    position_id           INTEGER NOT NULL,
+    grow_progress_seconds INTEGER NOT NULL DEFAULT 0,
+    is_boosted            INTEGER NOT NULL CHECK (is_boosted IN (0, 1)) DEFAULT 0,
     FOREIGN KEY (player_id) REFERENCES players (id) ON DELETE CASCADE
 );
 
