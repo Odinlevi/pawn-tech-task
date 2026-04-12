@@ -65,9 +65,7 @@ enum E_GREENHOUSE_DATA {
     bool:gh_IsPaused     // Growth Pause Status, when player is not nearby (is cached only)
 };
 
-forward InitializeEmptyGreenhouse(gh_data[E_GREENHOUSE_DATA]);
-
-public InitializeEmptyGreenhouse(gh_data[E_GREENHOUSE_DATA])
+stock InitializeEmptyGreenhouse(gh_data[E_GREENHOUSE_DATA])
 {
     gh_data[gh_ID] = -1; // -1 indicates an empty slot
     gh_data[gh_OwnerID] = -1;
@@ -78,4 +76,32 @@ public InitializeEmptyGreenhouse(gh_data[E_GREENHOUSE_DATA])
     gh_data[gh_Progress] = 0;
     gh_data[gh_IsUpgraded] = false;
     gh_data[gh_IsPaused] = false;
+}
+
+stock Greenhouse_GetPositionByIntID(positionID)
+{
+    if (positionID == GREENHOUSE_POSITION_1_ID)
+    {
+        return GREENHOUSE_POSITION_1;
+    }
+    else if (positionID == GREENHOUSE_POSITION_2_ID)
+    {
+        return GREENHOUSE_POSITION_2;
+    }
+    else if (positionID == GREENHOUSE_POSITION_3_ID)
+    {
+        return GREENHOUSE_POSITION_3;
+    }
+    else if (positionID == GREENHOUSE_POSITION_4_ID)
+    {
+        return GREENHOUSE_POSITION_4;
+    }
+    else if (positionID == GREENHOUSE_POSITION_5_ID)
+    {
+        return GREENHOUSE_POSITION_5;
+    }
+    
+    // Default position if ID is invalid
+    new Float:defaultPos[3] = {0.0, 0.0, 0.0};
+    return defaultPos;
 }

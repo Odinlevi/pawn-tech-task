@@ -19,8 +19,7 @@ new g_GreenhouseData[MAX_GREENHOUSES][E_GREENHOUSE_DATA];
 
 new g_CurrentChunk = 0;
 
-forward InitializeGreenhouseData();
-public InitializeGreenhouseData()
+stock InitializeGreenhouseData()
 {
     for(new i = 0; i < MAX_GREENHOUSES; i++)
     {
@@ -28,10 +27,7 @@ public InitializeGreenhouseData()
     }
 }
 
-// Forward declaration for the timer callback
-forward ProcessNextGreenhouseChunk();
-
-public ProcessNextGreenhouseChunk()
+stock ProcessNextGreenhouseChunk()
 {
     // Calculate the boundaries for this specific chunk
     new startIdx = g_CurrentChunk * GREENHOUSES_PER_CHUNK;
@@ -83,5 +79,61 @@ public ProcessNextGreenhouseChunk()
     if(g_CurrentChunk >= TOTAL_CHUNKS)
     {
         g_CurrentChunk = 0; 
+    }
+}
+
+stock GreenhouseSystem_AddGreenhouse(gh_data[E_GREENHOUSE_DATA]) // might be wise to use a reference, no time for that rn.
+{
+    for(new i = 0; i < MAX_GREENHOUSES; i++)
+    {
+        if (g_GreenhouseData[i][gh_ID] == -1) // Find the first empty slot
+        {
+            // Copy the provided greenhouse data into our main array
+            g_GreenhouseData[i][gh_ID] = gh_data[gh_ID];
+            g_GreenhouseData[i][gh_OwnerID] = gh_data[gh_OwnerID];
+            g_GreenhouseData[i][gh_PositionID] = gh_data[gh_PositionID];
+            g_GreenhouseData[i][gh_Pos][0] = gh_data[gh_Pos][0];
+            g_GreenhouseData[i][gh_Pos][1] = gh_data[gh_Pos][1];
+            g_GreenhouseData[i][gh_Pos][2] = gh_data[gh_Pos][2];
+            g_GreenhouseData[i][gh_Progress] = gh_data[gh_Progress];
+            g_GreenhouseData[i][gh_IsUpgraded] = gh_data[gh_IsUpgraded];
+            g_GreenhouseData[i][gh_IsPaused] = gh_data[gh_IsPaused];
+            return true; // Successfully added
+        }
+    }
+    return false; // No space available
+}
+
+stock GreenhouseSystem_GetGreenhousesByPlayerID(playerID, outputGreenhouses[MAX_GREENHOUSES_PER_PLAYER][E_GREENHOUSE_DATA])
+{
+    new count = 0;
+    for(new i = 0; i < MAX_GREENHOUSES && count < MAX_GREENHOUSES_PER_PLAYER; i++)
+    {
+        if (g_GreenhouseData[i][gh_ID] != -1 && g_GreenhouseData[i][gh_OwnerID] == playerID)
+        {
+            // Copy greenhouse data to output array
+            outputGreenhouses[count][gh_ID] = g_GreenhouseData[i][gh_ID];
+            outputGreenhouses[count][gh_OwnerID] = g_GreenhouseData[i][gh_OwnerID];
+            outputGreenhouses[count][gh_PositionID] = g_GreenhouseData[i][gh_PositionID];
+            outputGreenhouses[count][gh_Pos][0] = g_GreenhouseData[i][gh_Pos][0];
+            outputGreenhouses[count][gh_Pos][1] = g_GreenhouseData[i][gh_Pos][1];
+            outputGreenhouses[count][gh_Pos][2] = g_GreenhouseData[i][gh_Pos][2];
+            outputGreenhouses[count][gh_Progress] = g_GreenhouseData[i][gh_Progress];
+            outputGreenhouses[count][gh_IsUpgraded] = g_GreenhouseData[i][gh_IsUpgraded];
+            outputGreenhouses[count][gh_IsPaused] = g_GreenhouseData[i][gh_IsPaused];
+            count++;
+        }
+    }
+    return count; // Return the number of greenhouses found for this player
+}
+
+stock GreenhouseSystem_DeleteGreenhousesByPlayerID(playerID)
+{
+    for(new i = 0; i < MAX_GREENHOUSES; i++)
+    {
+        if (g_GreenhouseData[i][gh_ID] != -1 && g_GreenhouseData[i][gh_OwnerID] == playerID)
+        {
+            InitializeEmptyGreenhouse(g_GreenhouseData[i]); // Reset the greenhouse slot to empty
+        }
     }
 }
