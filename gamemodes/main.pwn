@@ -1,4 +1,5 @@
 #include <open.mp>
+#include <sscanf2>
 
 #include "persistence/server-db-context.pwn"
 
@@ -7,6 +8,8 @@
 
 #include "commands/on-player-connected-command.pwn"
 #include "commands/on-player-disconnected-command.pwn"
+#include "commands/on-player-created-gh-command.pwn"
+#include "commands/on-player-upgraded-gh-command.pwn"
 
 // #include "tests/test-add-gh.pwn"
 // #include "persistence/repositories/user-repository.pwn"
@@ -99,6 +102,39 @@ public OnGameModeExit()
     // it's important since OnPlayerDisconnect won't be triggered if the server is stopped.
 
     return 1;
+}
+
+public OnPlayerCommandText(playerid, cmdtext[])
+{
+    // --- /create_gh [1-5] ---
+    if (!strcmp(cmdtext, "/create_gh", true, 10))
+    {
+        new gh_pos;
+        // cmdtext + 10 skips "/create_gh" (10 chars) to get to the parameters
+        if (sscanf(cmdtext[10], "i", gh_pos)) 
+            return SendClientMessage(playerid, -1, "Usage: /create_gh [1-5]");
+
+        if (gh_pos < 1 || gh_pos > 5) 
+            return SendClientMessage(playerid, -1, "Invalid position. Use 1 to 5.");
+
+        return OnPlayerCreatedGhCommand(playerid, gh_pos);
+    }
+
+    // --- /upgrade_gh [1-5] ---
+    if (!strcmp(cmdtext, "/upgrade_gh", true, 11))
+    {
+        new gh_pos;
+        // cmdtext + 11 skips "/upgrade_gh" (11 chars)
+        if (sscanf(cmdtext[11], "i", gh_pos)) 
+            return SendClientMessage(playerid, -1, "Usage: /upgrade_gh [1-5]");
+
+        if (gh_pos < 1 || gh_pos > 5) 
+            return SendClientMessage(playerid, -1, "Invalid position. Use 1 to 5.");
+
+        return OnPlayerUpgradedGhCommand(playerid, gh_pos);
+    }
+
+    return 0; // Return 0 to allow the command to be processed by other handlers, or 1 to block it.
 }
 
 forward ServerTick();

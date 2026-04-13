@@ -3,6 +3,7 @@
 #endif
 #define _SERVER_DB_CONTEXT_INCLUDED
 
+//todo: persistence should be done with async operations and callbacks; should be used https://github.com/pBlueG/SA-MP-MySQL 
 
 static DB:gDBConnectionHandle;
 
