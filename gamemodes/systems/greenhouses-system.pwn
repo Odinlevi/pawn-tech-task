@@ -211,7 +211,7 @@ stock GreenhouseSystem_DeleteGreenhousesByPlayerID(playerID)
     }
 }
 
-// stock GreenhouseSystem_DeleteDynamicObjectsForGreenhouse(gh_data[E_GREENHOUSE_DATA])
+// stock GreenhouseSystem_DeleteDynamicObjectsForGreenhouse(gh_data[E_GREENHOUSE_DATA])  // got a bug, now its fixed, needs to be uncommented.
 // {
 //     for (new i = 0; i < GREENHOUSE_PROGRESS_STAGES * GREENHOUSE_MAX_DYNAMIC_OBJECTS_PER_STAGE; i++)
 //     {
@@ -228,3 +228,32 @@ stock GreenhouseSystem_DeleteGreenhousesByPlayerID(playerID)
 //         }
 //     }
 // }
+
+
+stock GreenhouseSystem_FindGreenhouseIndexByPlayerAndPositionID(playerID, positionID)
+{
+    for(new i = 0; i < MAX_GREENHOUSES; i++)
+    {
+        if (g_GreenhouseData[i][gh_ID] != -1 && 
+            g_GreenhouseData[i][gh_OwnerID] == playerID && 
+            g_GreenhouseData[i][gh_PositionID] == positionID)
+        {
+            return i; // Return the index of the matching greenhouse
+        }
+    }
+    return -1; // No matching greenhouse found
+}
+
+stock GreenhouseSystem_UpgradeGreenhouse(greenhouseIndex)
+{
+    if (greenhouseIndex < 0
+        || greenhouseIndex >= MAX_GREENHOUSES
+        || g_GreenhouseData[greenhouseIndex][gh_ID] == -1
+        || g_GreenhouseData[greenhouseIndex][gh_IsUpgraded] == true)
+    {
+        return false; // Invalid index or greenhouse does not exist
+    }
+
+    g_GreenhouseData[greenhouseIndex][gh_IsUpgraded] = true;
+    return true; // Successfully upgraded
+}
