@@ -10,6 +10,8 @@ samp-server.exe
 samp-npc.exe
 announce.exe
 openmp-server.exe
+omp-server.exe
+omp-server.pdb
 samp03svr
 samp-npc
 announce
@@ -55,4 +57,4 @@ dependencies/
 # ==========================================
 # 8. Database Files
 # ==========================================
-server_realtime_data.db
+# server_realtime_data.db
