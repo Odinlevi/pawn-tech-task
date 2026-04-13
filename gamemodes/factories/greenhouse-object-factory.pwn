@@ -1,7 +1,7 @@
-#if defined _gh_object_fabric_included
+#if defined _gh_object_factory_included
     #endinput
 #endif
-#define _gh_object_fabric_included
+#define _gh_object_factory_included
 
 #include <streamer>
 
@@ -23,11 +23,11 @@ new GhComplexDynamicObjectStage3[GREENHOUSE_MAX_DYNAMIC_OBJECTS_PER_STAGE][E_DYN
 new GhComplexDynamicObjectStage4[GREENHOUSE_MAX_DYNAMIC_OBJECTS_PER_STAGE][E_DYNAMIC_OBJECT_DATA];
 
 
-// This fabric is responsible for spawning the dynamic objects that represent the greenhouse's growth stages.
-// ** IMPORTANT **: there is a side effect of this fabric which is that it also initializes the dynamic object IDs in the greenhouse data structure. be aware.
+// This factory is responsible for spawning the dynamic objects that represent the greenhouse's growth stages.
+// ** IMPORTANT **: there is a side effect of this factory which is that it also initializes the dynamic object IDs in the greenhouse data structure. be aware.
 
 // todo: after some thinking, i think i can just get the array of spawned objects ids and return it. will return to it later if i'll have time.
-stock GhObjFabric_Spawn(playerid, virtualWorldID, gh_data[E_GREENHOUSE_DATA])
+stock GhObjFactory_Spawn(playerid, virtualWorldID, gh_data[E_GREENHOUSE_DATA])
 {
     new currentStage = gh_data[gh_Progress] / (GREENHOUSE_MAX_PROGRESS / GREENHOUSE_PROGRESS_STAGES);
     if (currentStage >= GREENHOUSE_PROGRESS_STAGES)
@@ -35,19 +35,19 @@ stock GhObjFabric_Spawn(playerid, virtualWorldID, gh_data[E_GREENHOUSE_DATA])
 
     for (new stage = 0; stage <= currentStage; stage++)
     {
-        GhObjFabric_SpawnOnStage(playerid, virtualWorldID, gh_data, stage);
+        GhObjFactory_SpawnOnStage(playerid, virtualWorldID, gh_data, stage);
     }
 }
 
-stock GhObjFabric_SpawnOnStage(playerid, virtualWorldID, gh_data[E_GREENHOUSE_DATA], stage)
+stock GhObjFactory_SpawnOnStage(playerid, virtualWorldID, gh_data[E_GREENHOUSE_DATA], stage)
 {
     if (GhComplexDynamicObjectStage0[0][do_ModelID] == 0) // only once.
     {
-        GhObjFabric_InitializeGhStage0();
-        GhObjFabric_InitializeGhStage1();
-        GhObjFabric_InitializeGhStage2();
-        GhObjFabric_InitializeGhStage3();
-        GhObjFabric_InitializeGhStage4();
+        GhObjFactory_InitializeGhStage0();
+        GhObjFactory_InitializeGhStage1();
+        GhObjFactory_InitializeGhStage2();
+        GhObjFactory_InitializeGhStage3();
+        GhObjFactory_InitializeGhStage4();
     }
     
     new stageObjects[GREENHOUSE_MAX_DYNAMIC_OBJECTS_PER_STAGE][E_DYNAMIC_OBJECT_DATA];
@@ -98,7 +98,7 @@ stock GhObjFabric_SpawnOnStage(playerid, virtualWorldID, gh_data[E_GREENHOUSE_DA
 }
 
 
-stock GhObjFabric_InitializeGhStage0()
+stock GhObjFactory_InitializeGhStage0()
 {
     GhComplexDynamicObjectStage0[0][do_ModelID] = 1479;
     GhComplexDynamicObjectStage0[0][do_Pos][0] = 0.0;
@@ -132,7 +132,7 @@ stock GhObjFabric_InitializeGhStage0()
     GhComplexDynamicObjectStage0[5][do_Pos][2] = 2.4;
 }
 
-stock GhObjFabric_InitializeGhStage1()
+stock GhObjFactory_InitializeGhStage1()
 {
     GhComplexDynamicObjectStage1[0][do_ModelID] = 19636;
     GhComplexDynamicObjectStage1[0][do_Pos][0] = 2.2;
@@ -152,7 +152,7 @@ stock GhObjFabric_InitializeGhStage1()
     GhComplexDynamicObjectStage1[2][do_Rot][2] = -30.0;
 }
 
-stock GhObjFabric_InitializeGhStage2()
+stock GhObjFactory_InitializeGhStage2()
 {
     GhComplexDynamicObjectStage2[0][do_ModelID] = 19636;
     GhComplexDynamicObjectStage2[0][do_Pos][0] = 1.1;
@@ -172,7 +172,7 @@ stock GhObjFabric_InitializeGhStage2()
     GhComplexDynamicObjectStage2[2][do_Rot][2] = -30.0;
 }
 
-stock GhObjFabric_InitializeGhStage3()
+stock GhObjFactory_InitializeGhStage3()
 {
     GhComplexDynamicObjectStage3[0][do_ModelID] = 19636;
     GhComplexDynamicObjectStage3[0][do_Pos][0] = 2.2;
@@ -192,7 +192,7 @@ stock GhObjFabric_InitializeGhStage3()
     GhComplexDynamicObjectStage3[2][do_Rot][2] = -30.0;
 }
 
-stock GhObjFabric_InitializeGhStage4()
+stock GhObjFactory_InitializeGhStage4()
 {
     GhComplexDynamicObjectStage4[0][do_ModelID] = 19636;
     GhComplexDynamicObjectStage4[0][do_Pos][0] = 1.1;
