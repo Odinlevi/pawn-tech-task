@@ -7,6 +7,7 @@
 #include "domain/greenhouse.pwn"
 
 #include "systems/greenhouses-system.pwn"
+#include "fabrics/greenhouse-object-fabric.pwn"
 
 
 stock OnPlayerConnectedCommand(playerid)
@@ -38,7 +39,7 @@ stock OnPlayerConnectedCommand(playerid)
 
         new gh_data[E_GREENHOUSE_DATA];
         gh_data[gh_ID] = greenhouseRepResponse[i][gh_ID];
-        gh_data[gh_OwnerID] = userRepResponse[u_ID];
+        gh_data[gh_OwnerID] = playerid; // runtime player ID, not persisted.
         gh_data[gh_PositionID] = greenhouseRepResponse[i][gh_positionID];
 
         new Float:pos[3];
@@ -52,6 +53,8 @@ stock OnPlayerConnectedCommand(playerid)
         gh_data[gh_IsPaused] = false;
 
         GreenhouseSystem_AddGreenhouse(gh_data);
+
+        GhObjFabric_Spawn(playerid, 0, gh_data);
     }
 
     // new result = GreenhouseRepository_UpdateGreenhouse(greenhouseRepResponse[0][gh_ID], greenhouseRepResponse[0][gh_progress] + 10, greenhouseRepResponse[0][gh_isUpgraded]);

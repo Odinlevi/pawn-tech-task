@@ -8,8 +8,6 @@
 #include "commands/on-player-connected-command.pwn"
 #include "commands/on-player-disconnected-command.pwn"
 
-#include <streamer>
-
 // #include "tests/test-add-gh.pwn"
 // #include "persistence/repositories/user-repository.pwn"
 // #include "domain/dtos/repository-responses/user/find-or-create-user-rep-response.pwn"
@@ -56,14 +54,6 @@ public OnGameModeInit()
 public OnPlayerConnect(playerid)
 {
     OnPlayerConnectedCommand(playerid);
-
-    /*
-    CreateDynamicObject(modelid, Float:x, Float:y, Float:z, Float:rx, Float:ry, Float:rz, worldid = -1, interiorid = -1, playerid = -1, Float:streamdistance = STREAMER_OBJECT_SD, Float:drawdistance = STREAMER_OBJECT_DD, areaid = -1, priority = 0)
-    The streaming distance (streamdistance) refers to how close the player needs to be to the object before it is streamed in by the plugin.
-    The draw distance (drawdistance) is a parameter used by the game that determines how close the player needs to be to the object before it is rendered on the player's screen.
-    */
-
-    
 
     return 1;
 }
