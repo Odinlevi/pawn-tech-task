@@ -73,6 +73,8 @@ stock ProcessNextGreenhouseChunk()
                     g_GreenhouseData[i][gh_Progress] += (GREENHOUSE_UPDATE_INTERVAL / 1000) * GREENHOUSE_UPGRADE_PROGRESS_MULTIPLIER; // Upgraded greenhouses grow twice as fast
                 }
 
+                printf("Greenhouse ID %d Progress: %d seconds", g_GreenhouseData[i][gh_ID], g_GreenhouseData[i][gh_Progress]);
+
                 new newStage = g_GreenhouseData[i][gh_Progress] / GREENHOUSE_PROGRESS_PER_STAGE;
                 
                 if (newStage > currentStage && newStage < GREENHOUSE_PROGRESS_STAGES) // Stage has advanced, but growth is not yet complete
@@ -81,11 +83,11 @@ stock ProcessNextGreenhouseChunk()
                     if (currentStage < GREENHOUSE_PROGRESS_STAGES) // clumped on progress == GREENHOUSE_MAX_PROGRESS. no visual effects on the full growth.
                     {
                         printf("Greenhouse ID %d has advanced to stage %d", g_GreenhouseData[i][gh_ID], currentStage);
-                        GhObjFactory_SpawnOnStage(g_GreenhouseData[i][gh_OwnerID], 0, g_GreenhouseData[i], currentStage);
-                        printf("Spawned dynamic objects for greenhouse ID %d at stage %d", g_GreenhouseData[i][gh_ID], currentStage);
+                        new objectIds[GREENHOUSE_MAX_DYNAMIC_OBJECTS_PER_STAGE];
+                        objectIds = GhObjFactory_SpawnOnStage(g_GreenhouseData[i][gh_OwnerID], 0, g_GreenhouseData[i], currentStage);
+                        GreenhouseSystem_AssociateDynamicObjectsOfStageWithGreenhouse(g_GreenhouseData[i][gh_ID], currentStage, objectIds);
                     } 
                 }
-                printf("Greenhouse ID %d Progress: %d seconds", g_GreenhouseData[i][gh_ID], g_GreenhouseData[i][gh_Progress]);
             }
             else
             {
@@ -112,6 +114,7 @@ stock GreenhouseSystem_AddGreenhouse(gh_data[E_GREENHOUSE_DATA]) // might be wis
         if (g_GreenhouseData[i][gh_ID] == -1) // Find the first empty slot
         {
             // Copy the provided greenhouse data into our main array
+            printf("Adding greenhouse with ID %d for player ID %d at array slot: %d", gh_data[gh_ID], gh_data[gh_OwnerID], i);
             g_GreenhouseData[i][gh_ID] = gh_data[gh_ID];
             g_GreenhouseData[i][gh_OwnerID] = gh_data[gh_OwnerID];
             g_GreenhouseData[i][gh_PositionID] = gh_data[gh_PositionID];
@@ -121,11 +124,45 @@ stock GreenhouseSystem_AddGreenhouse(gh_data[E_GREENHOUSE_DATA]) // might be wis
             g_GreenhouseData[i][gh_Progress] = gh_data[gh_Progress];
             g_GreenhouseData[i][gh_IsUpgraded] = gh_data[gh_IsUpgraded];
             g_GreenhouseData[i][gh_IsPaused] = gh_data[gh_IsPaused];
-            g_GreenhouseData[i][gh_DynamicObjectIDs] = gh_data[gh_DynamicObjectIDs];
+            // g_GreenhouseData[i][gh_DynamicObjectIDs] = gh_data[gh_DynamicObjectIDs];
             return true; // Successfully added
         }
     }
     return false; // No space available
+}
+
+stock GreenhouseSystem_AssociateDynamicObjectsWithGreenhouse(greenhouseID, dynamicObjectIDs[GREENHOUSE_PROGRESS_STAGES * GREENHOUSE_MAX_DYNAMIC_OBJECTS_PER_STAGE])
+{
+    for(new i = 0; i < MAX_GREENHOUSES; i++)
+    {
+        if (g_GreenhouseData[i][gh_ID] == greenhouseID)
+        {
+            // Copy dynamic object IDs to the greenhouse data
+            for (new j = 0; j < GREENHOUSE_PROGRESS_STAGES * GREENHOUSE_MAX_DYNAMIC_OBJECTS_PER_STAGE; j++)
+            {
+                g_GreenhouseData[i][gh_DynamicObjectIDs][j] = dynamicObjectIDs[j];
+            }
+            return true; // Successfully added
+        }
+    }
+    return false; // Greenhouse ID not found
+}
+
+stock GreenhouseSystem_AssociateDynamicObjectsOfStageWithGreenhouse(greenhouseID, stage, dynamicObjectIDs[GREENHOUSE_MAX_DYNAMIC_OBJECTS_PER_STAGE])
+{
+    for(new i = 0; i < MAX_GREENHOUSES; i++)
+    {
+        if (g_GreenhouseData[i][gh_ID] == greenhouseID)
+        {
+            // Copy dynamic object IDs to the greenhouse data
+            for (new j = 0; j < GREENHOUSE_MAX_DYNAMIC_OBJECTS_PER_STAGE; j++)
+            {
+                g_GreenhouseData[i][gh_DynamicObjectIDs][stage * GREENHOUSE_MAX_DYNAMIC_OBJECTS_PER_STAGE + j] = dynamicObjectIDs[j];
+            }
+            return true; // Successfully added
+        }
+    }
+    return false; // Greenhouse ID not found
 }
 
 stock GreenhouseSystem_GetGreenhousesByPlayerID(playerID, outputGreenhouses[MAX_GREENHOUSES_PER_PLAYER][E_GREENHOUSE_DATA])
@@ -158,23 +195,36 @@ stock GreenhouseSystem_DeleteGreenhousesByPlayerID(playerID)
     {
         if (g_GreenhouseData[i][gh_ID] != -1 && g_GreenhouseData[i][gh_OwnerID] == playerID)
         {
-            GreenhouseSystem_DeleteDynamicObjectsForGreenhouse(g_GreenhouseData[i]); // Delete dynamic objects for this greenhouse
+            for (new j = 0; j < GREENHOUSE_PROGRESS_STAGES * GREENHOUSE_MAX_DYNAMIC_OBJECTS_PER_STAGE; j++)
+            {
+                if (g_GreenhouseData[i][gh_DynamicObjectIDs][j] != 0)
+                {
+                    printf("Deleting dynamic object ID %d for greenhouse ID %d in array slot: %d", g_GreenhouseData[i][gh_DynamicObjectIDs][j], g_GreenhouseData[i][gh_ID], j);
+                    DestroyDynamicObject(g_GreenhouseData[i][gh_DynamicObjectIDs][j]);
+                    g_GreenhouseData[i][gh_DynamicObjectIDs][j] = 0;
+                }
+            }
+
+            // GreenhouseSystem_DeleteDynamicObjectsForGreenhouse(g_GreenhouseData[i]); // Delete dynamic objects for this greenhouse
             InitializeEmptyGreenhouse(g_GreenhouseData[i]); // Reset the greenhouse slot to empty
         }
     }
 }
 
-stock GreenhouseSystem_DeleteDynamicObjectsForGreenhouse(gh_data[E_GREENHOUSE_DATA])
-{
-    for (new i = 0; i < GREENHOUSE_PROGRESS_STAGES * GREENHOUSE_MAX_DYNAMIC_OBJECTS_PER_STAGE; i++)
-    {
-        new objectID = gh_data[gh_DynamicObjectIDs][i];
-        if (objectID != -1)
-        {
-            DestroyDynamicObject(objectID);
-            gh_data[gh_DynamicObjectIDs][i] = -1;
+// stock GreenhouseSystem_DeleteDynamicObjectsForGreenhouse(gh_data[E_GREENHOUSE_DATA])
+// {
+//     for (new i = 0; i < GREENHOUSE_PROGRESS_STAGES * GREENHOUSE_MAX_DYNAMIC_OBJECTS_PER_STAGE; i++)
+//     {
+//         new objectID = gh_data[gh_DynamicObjectIDs][i];
 
-            printf("Destroyed dynamic object ID %d for greenhouse ID %d", objectID, gh_data[gh_ID]);
-        }
-    }
-}
+        
+
+//         if (objectID != 0)
+//         {
+//             DestroyDynamicObject(objectID);
+//             gh_data[gh_DynamicObjectIDs][i] = 0;
+
+//             printf("Destroyed dynamic object ID %d for greenhouse ID %d in array slot: %d", objectID, gh_data[gh_ID], i);
+//         }
+//     }
+// }

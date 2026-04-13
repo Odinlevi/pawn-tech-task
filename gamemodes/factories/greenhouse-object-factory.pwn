@@ -33,10 +33,20 @@ stock GhObjFactory_Spawn(playerid, virtualWorldID, gh_data[E_GREENHOUSE_DATA])
     if (currentStage >= GREENHOUSE_PROGRESS_STAGES)
         currentStage = GREENHOUSE_PROGRESS_STAGES - 1; // clumped on progress == GREENHOUSE_MAX_PROGRESS. kind of a hack.
 
+    new objectIds[GREENHOUSE_MAX_DYNAMIC_OBJECTS_PER_STAGE * GREENHOUSE_PROGRESS_STAGES];
+
     for (new stage = 0; stage <= currentStage; stage++)
     {
-        GhObjFactory_SpawnOnStage(playerid, virtualWorldID, gh_data, stage);
+        new stageObjectIds[GREENHOUSE_MAX_DYNAMIC_OBJECTS_PER_STAGE];
+        stageObjectIds = GhObjFactory_SpawnOnStage(playerid, virtualWorldID, gh_data, stage);
+
+        for (new i = 0; i < GREENHOUSE_MAX_DYNAMIC_OBJECTS_PER_STAGE; i++)
+        {
+            objectIds[stage * GREENHOUSE_MAX_DYNAMIC_OBJECTS_PER_STAGE + i] = stageObjectIds[i];
+        }
     }
+
+    return objectIds; // return the array of spawned object IDs for all stages up to the current one.
 }
 
 stock GhObjFactory_SpawnOnStage(playerid, virtualWorldID, gh_data[E_GREENHOUSE_DATA], stage)
@@ -52,6 +62,7 @@ stock GhObjFactory_SpawnOnStage(playerid, virtualWorldID, gh_data[E_GREENHOUSE_D
     
     new stageObjects[GREENHOUSE_MAX_DYNAMIC_OBJECTS_PER_STAGE][E_DYNAMIC_OBJECT_DATA];
     new objectsCount = 0;
+    new objectIds[GREENHOUSE_MAX_DYNAMIC_OBJECTS_PER_STAGE];
 
     switch (stage)
     {
@@ -92,9 +103,11 @@ stock GhObjFactory_SpawnOnStage(playerid, virtualWorldID, gh_data[E_GREENHOUSE_D
                                             virtualWorldID, -1, playerid, 
                                             GREENHOUSE_DISTANCE_THRESHOLD, GREENHOUSE_DISTANCE_THRESHOLD, 
                                             -1, 0);
-        gh_data[gh_DynamicObjectIDs][stage * GREENHOUSE_MAX_DYNAMIC_OBJECTS_PER_STAGE + i] = objectid;
+        
+        objectIds[i] = objectid; // store the spawned object ID in the array to later associate it with the greenhouse.
     }
     
+    return objectIds; // return the array of spawned object IDs for this stage.
 }
 
 

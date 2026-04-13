@@ -52,9 +52,14 @@ stock OnPlayerConnectedCommand(playerid)
         gh_data[gh_IsUpgraded] = greenhouseRepResponse[i][gh_isUpgraded];
         gh_data[gh_IsPaused] = false;
 
-        GreenhouseSystem_AddGreenhouse(gh_data);
+        new bool:successAdd = GreenhouseSystem_AddGreenhouse(gh_data);
+        printf("GreenhouseSystem_AddGreenhouse response for greenhouse ID %d: %d", gh_data[gh_ID], successAdd);
 
-        GhObjFactory_Spawn(playerid, 0, gh_data);
+        new objectIds[GREENHOUSE_MAX_DYNAMIC_OBJECTS_PER_STAGE * GREENHOUSE_PROGRESS_STAGES];
+        objectIds = GhObjFactory_Spawn(playerid, 0, gh_data);
+
+        new bool:successAssociation = GreenhouseSystem_AssociateDynamicObjectsWithGreenhouse(gh_data[gh_ID], objectIds);
+        printf("GreenhouseSystem_AssociateDynamicObjectsWithGreenhouse response for greenhouse ID %d: %d", gh_data[gh_ID], successAssociation);
     }
 
     // new result = GreenhouseRepository_UpdateGreenhouse(greenhouseRepResponse[0][gh_ID], greenhouseRepResponse[0][gh_progress] + 10, greenhouseRepResponse[0][gh_isUpgraded]);

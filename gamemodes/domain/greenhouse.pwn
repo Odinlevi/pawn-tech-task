@@ -54,10 +54,10 @@ stock InitializeEmptyGreenhouse(gh_data[E_GREENHOUSE_DATA])
     gh_data[gh_IsUpgraded] = false;
     gh_data[gh_IsPaused] = false;
 
-    // Initialize dynamic object IDs to -1 (indicating no object)
+    // Initialize dynamic object IDs to 0 (indicating no object)
     for (new i = 0; i < GREENHOUSE_PROGRESS_STAGES * GREENHOUSE_MAX_DYNAMIC_OBJECTS_PER_STAGE; i++)
     {
-        gh_data[gh_DynamicObjectIDs][i] = -1;
+        gh_data[gh_DynamicObjectIDs][i] = 0;
     }
 }
 
