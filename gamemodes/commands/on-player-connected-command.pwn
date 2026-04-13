@@ -7,7 +7,7 @@
 #include "domain/greenhouse.pwn"
 
 #include "systems/greenhouses-system.pwn"
-#include "fabrics/greenhouse-object-fabric.pwn"
+#include "factories/greenhouse-object-factory.pwn"
 
 
 stock OnPlayerConnectedCommand(playerid)
@@ -54,7 +54,7 @@ stock OnPlayerConnectedCommand(playerid)
 
         GreenhouseSystem_AddGreenhouse(gh_data);
 
-        GhObjFabric_Spawn(playerid, 0, gh_data);
+        GhObjFactory_Spawn(playerid, 0, gh_data);
     }
 
     // new result = GreenhouseRepository_UpdateGreenhouse(greenhouseRepResponse[0][gh_ID], greenhouseRepResponse[0][gh_progress] + 10, greenhouseRepResponse[0][gh_isUpgraded]);

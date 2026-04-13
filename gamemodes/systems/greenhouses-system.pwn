@@ -5,7 +5,7 @@
 
 #include <streamer>
 #include "domain/greenhouse.pwn"
-#include "fabrics/greenhouse-object-fabric.pwn"
+#include "factories/greenhouse-object-factory.pwn"
 
 #define TOTAL_CHUNKS 50
 #define GREENHOUSES_PER_CHUNK (MAX_GREENHOUSES / TOTAL_CHUNKS)
@@ -81,7 +81,7 @@ stock ProcessNextGreenhouseChunk()
                     if (currentStage < GREENHOUSE_PROGRESS_STAGES) // clumped on progress == GREENHOUSE_MAX_PROGRESS. no visual effects on the full growth.
                     {
                         printf("Greenhouse ID %d has advanced to stage %d", g_GreenhouseData[i][gh_ID], currentStage);
-                        GhObjFabric_SpawnOnStage(g_GreenhouseData[i][gh_OwnerID], 0, g_GreenhouseData[i], currentStage);
+                        GhObjFactory_SpawnOnStage(g_GreenhouseData[i][gh_OwnerID], 0, g_GreenhouseData[i], currentStage);
                         printf("Spawned dynamic objects for greenhouse ID %d at stage %d", g_GreenhouseData[i][gh_ID], currentStage);
                     } 
                 }
