@@ -32,25 +32,29 @@ stock GreenhouseRepository_FindAllGreenhousesByUser(userID)
     new response[MAX_GREENHOUSES_PER_PLAYER][E_GREENHOUSE_FIND_ALL_BY_USER_REP_RESPONSE];
     new index = 0;
 
+    response[0][gh_ID] = -1; // Default to no greenhouses found
+
 
     if (dbResultSet)
     {
-        do
+        if (DB_GetRowCount(dbResultSet) > 0)
         {
-            if (index >= MAX_GREENHOUSES_PER_PLAYER)
+            do
             {
-                print("Max greenhouses per player reached while fetching greenhouses for user ID: %d", userID);
-                break;
-            }
+                if (index >= MAX_GREENHOUSES_PER_PLAYER)
+                {
+                    print("Max greenhouses per player reached while fetching greenhouses for user ID: %d", userID);
+                    break;
+                }
 
-            response[index][gh_ID] = DB_GetFieldIntByName(dbResultSet, "id");
-            response[index][gh_userID] = userID;
-            response[index][gh_positionID] = DB_GetFieldIntByName(dbResultSet, "position_id");
-            response[index][gh_progress] = DB_GetFieldIntByName(dbResultSet, "grow_progress_seconds");
-            response[index][gh_isUpgraded] = DB_GetFieldIntByName(dbResultSet, "is_boosted");
-            index++;
+                response[index][gh_ID] = DB_GetFieldIntByName(dbResultSet, "id");
+                response[index][gh_userID] = userID;
+                response[index][gh_positionID] = DB_GetFieldIntByName(dbResultSet, "position_id");
+                response[index][gh_progress] = DB_GetFieldIntByName(dbResultSet, "grow_progress_seconds");
+                response[index][gh_isUpgraded] = DB_GetFieldIntByName(dbResultSet, "is_boosted");
+                index++;
+            } while (DB_SelectNextRow(dbResultSet));
         }
-        while (DB_SelectNextRow(dbResultSet));
     }
 
 
