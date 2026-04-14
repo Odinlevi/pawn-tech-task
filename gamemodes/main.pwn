@@ -1,7 +1,8 @@
 #include <open.mp>
 #include <sscanf2>
 
-#include "persistence/server-db-context.pwn"
+// #include "persistence/server-db-context.pwn"
+#include "persistence/mysql-server-db-context.pwn"
 
 #include "systems/server-tick-system.pwn"
 #include "systems/greenhouses-system.pwn"
@@ -11,10 +12,6 @@
 #include "commands/on-player-created-gh-command.pwn"
 #include "commands/on-player-upgraded-gh-command.pwn"
 
-// #include "tests/test-add-gh.pwn"
-// #include "persistence/repositories/user-repository.pwn"
-// #include "domain/dtos/repository-responses/user/find-or-create-user-rep-response.pwn"
-
 // This is the entry point for the server, executed once when the server starts.
 public OnGameModeInit()
 {
@@ -22,13 +19,6 @@ public OnGameModeInit()
 
     // Sets a "tick" every 20 milliseconds (50 times per second)
     SetTimer("ServerTick", SERVER_TICK_INTERVAL, true);
-    
-    // intialize main db
-    if (!ServerDBContext_InitializeDatabase("server_realtime_data.db"))
-    {
-        print("Failed to initialize database!");
-        return 0;
-    }
 
     // Disable the default GTA SA single-player map objects
     DisableInteriorEnterExits();
@@ -39,19 +29,11 @@ public OnGameModeInit()
 
     InitializeGreenhouseData();
 
+    MySQLServerDBContext_InitializeDatabase();
 
-    // // TEST AREA
-
-    // new object = CreateDynamicObject(1271, 10.0, 10.0, 3.0, 0.0, 0.0, 0.0, -1, -1, -1, 100.0, 100.0);
-
-    // new dbResponse[E_USER_FIND_OR_CREATE_REP_RESPONSE];
-    // dbResponse = UserRepository_FindOrCreateUser("odi");
-
-    // printf("UserRepository_FindOrCreateUser response: ID=%d, Username=%s", dbResponse[u_ID], dbResponse[u_Username]);
-    // // END
-    
     return 1;
 }
+
 
 // Triggered when a player connects to the server
 public OnPlayerConnect(playerid)
@@ -78,8 +60,8 @@ public OnPlayerSpawn(playerid)
     // Set their interior to the outside world (Interior 0)
     SetPlayerInterior(playerid, 0);
     
-    // Set their virtual world to 0 (the default dimension)
-    SetPlayerVirtualWorld(playerid, 0);
+    // Set their virtual world to their player ID (unique dimension)
+    SetPlayerVirtualWorld(playerid, playerid);
     
     // Give them a flat camera angle behind the player
     SetCameraBehindPlayer(playerid);
@@ -96,7 +78,7 @@ public OnPlayerDisconnect(playerid, reason)
 public OnGameModeExit()
 {
     print("Greenhouse Server Stopped");
-    ServerDBContext_CloseDatabase();
+    MySQLServerDBContext_CloseDatabase();
 
     // todo: persist any data in memory that hasn't been persisted yet, such as greenhouses growth progress.
     // it's important since OnPlayerDisconnect won't be triggered if the server is stopped.

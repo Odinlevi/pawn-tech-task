@@ -103,7 +103,8 @@
     "password": "",
     "pawn": {
         "legacy_plugins": [
-            "streamer"
+            "streamer",
+            "mysql"
         ],
         "main_scripts": [
             "main"
