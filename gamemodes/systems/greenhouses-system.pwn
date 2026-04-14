@@ -88,6 +88,15 @@ stock ProcessNextGreenhouseChunk()
                         GreenhouseSystem_AssociateDynamicObjectsOfStageWithGreenhouse(g_GreenhouseData[i][gh_ID], currentStage, objectIds);
                     } 
                 }
+
+                if (g_GreenhouseData[i][gh_Progress] >= GREENHOUSE_MAX_PROGRESS)
+                {
+                    g_GreenhouseData[i][gh_Progress] = GREENHOUSE_MAX_PROGRESS; // Cap progress at max
+                    new message[128];
+                    format(message, sizeof(message), "Your greenhouse at position %d is fully grown!", g_GreenhouseData[i][gh_PositionID]);
+                    SendClientMessage(g_GreenhouseData[i][gh_OwnerID], -1, message);
+                }
+
             }
             else
             {
